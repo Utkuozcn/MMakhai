@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MMakhai</title>
+  <link rel="icon" href="logo.png" type="image/png" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+    :root {
+      --accent: #8f2424;
+      --accent-hover: #a82e2e;
+      --accent-deep: #5a1515;
+      --bg: #0c0a0b;
+      --bg-elevated: #141011;
+      --card: #161213;
+      --border: rgba(143, 36, 36, 0.22);
+      --border-hover: rgba(143, 36, 36, 0.45);
+      --text: #e6ddd5;
+      --text-secondary: #a8978c;
+      --gold: #b89b6c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -5%, rgba(90, 20, 20, 0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 35% at 0% 90%, rgba(50, 10, 10, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 35% at 100% 70%, rgba(45, 10, 10, 0.2) 0%, transparent 50%),
+        linear-gradient(180deg, #110d0e 0%, #0c0a0b 50%, #0e0b0c 100%);
+      z-index: -4;
+    }
+
+    .rune-overlay {
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='90' height='90' viewBox='0 0 90 90' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M45 10 L49 32 L45 36 L41 32 Z M45 54 L49 76 L45 80 L41 76 Z M10 45 L32 41 L36 45 L32 49 Z M54 45 L76 41 L80 45 L76 49 Z' fill='none' stroke='%234a1818' stroke-width='0.7' opacity='0.5'/%3E%3Ccircle cx='45' cy='45' r='3.5' fill='none' stroke='%234a1818' stroke-width='0.6' opacity='0.4'/%3E%3C/svg%3E");
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: -3;
+    }
+
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(480px, 65vw);
+      height: auto;
+      opacity: 0.035;
+      pointer-events: none;
+      z-index: -2;
+      filter: grayscale(0.4) brightness(0.85);
+    }
+
+    .char-side {
+      position: fixed;
+      right: -40px;
+      bottom: 0;
+      height: min(72vh, 660px);
+      opacity: 0.14;
+      pointer-events: none;
+      z-index: -1;
+      mask-image: linear-gradient(to left, black 50%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%);
+      filter: saturate(0.6) brightness(0.8);
+    }
+
+    @media (max-width: 900px) { .char-side { display: none; } }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 28px 16px 0;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 9px 18px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      transition: all 0.25s ease;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--text);
+      border-color: var(--border);
+      background: rgba(143, 36, 36, 0.1);
+    }
+
+    header {
+      text-align: center;
+      padding: 48px 20px 28px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .main-logo {
+      width: 130px;
+      height: auto;
+      filter: drop-shadow(0 0 20px rgba(100, 25, 25, 0.5));
+      transition: transform 0.35s ease;
+    }
+
+    .main-logo:hover { transform: scale(1.04); }
+
+    .brand-text {
+      width: min(260px, 70vw);
+      height: auto;
+      filter: drop-shadow(0 0 10px rgba(100, 25, 25, 0.35));
+    }
+
+    .tagline {
+      margin-top: 18px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.85;
+    }
+
+    .rune-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 24px auto 6px;
+      max-width: 380px;
+    }
+
+    .rune-divider span {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(143,36,36,0.4), transparent);
+    }
+
+    .rune-divider svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.55;
+    }
+
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 12px 20px 80px;
+    }
+
+    .section-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .social-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .social-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(143,36,36,0.5), transparent);
+    }
+
+    .social-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      background: var(--bg-elevated);
+    }
+
+    .social-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: rgba(143, 36, 36, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .social-icon svg { width: 20px; height: 20px; }
+
+    .social-info strong {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .social-info span {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .cta {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: #f0e8e0;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-deep) 100%);
+      padding: 13px 26px;
+      border-radius: 8px;
+      border: 1px solid rgba(160, 50, 50, 0.3);
+      box-shadow: 0 4px 16px rgba(80, 15, 15, 0.3);
+      transition: all 0.25s ease;
+    }
+
+    .cta-btn:hover {
+      background: linear-gradient(180deg, var(--accent-hover) 0%, var(--accent) 100%);
+      box-shadow: 0 6px 22px rgba(100, 20, 20, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .cta-note {
+      margin-top: 14px;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #5c5048;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+    }
+
+    footer strong { color: var(--accent); font-weight: 600; }
+
+    @media (max-width: 560px) {
+      .main-logo { width: 105px; }
+      .brand-text { width: 210px; }
+      header { padding: 36px 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="rune-overlay"></div>
+  <img src="logo.png" alt="" class="watermark" />
+  <img src="character.png" alt="" class="char-side" />
+
+  <nav>
+    <a href="index.html" class="active">Home</a>
+    <a href="profiles.html">Profiles / Addons</a>
+  </nav>
+
+  <header>
+    <div class="logo-wrap">
+      <img src="logo.png" alt="MMakhai" class="main-logo" />
+      <img src="text.png" alt="MMAKHAI" class="brand-text" />
+    </div>
+    <p class="tagline">Warlock · Content · UI</p>
+  </header>
+
+  <div class="rune-divider">
+    <span></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#8f2424" stroke-width="1.3">
+      <path d="M12 2 L14 9 L12 11 L10 9 Z M12 13 L14 20 L12 22 L10 20 Z M2 12 L9 10 L11 12 L9 14 Z M13 12 L20 10 L22 12 L20 14 Z"/>
+      <circle cx="12" cy="12" r="2.5"/>
+    </svg>
+    <span></span>
+  </div>
+
+  <main>
+    <p class="section-label">Find me on</p>
+    <div class="social-grid">
+      <a class="social-card" href="https://www.youtube.com/@MMakhai" target="_blank" rel="noopener">
+        <div class="social-icon">
+          <svg viewBox="0 0 24 24" fill="#c94a4a"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7l6.3 3.5-6.3 3.5z"/></svg>
+        </div>
+        <div class="social-info">
+          <strong>YouTube</strong>
+          <span>@MMakhai</span>
+        </div>
+      </a>
+
+      <a class="social-card" href="https://kick.com/mmakhai" target="_blank" rel="noopener">
+        <div class="social-icon">
+          <svg viewBox="0 0 24 24" fill="#53fc18"><path d="M3 3h5.5v5.5L12 5l3.5 3.5V3H21v18h-5.5v-5.5L12 19l-3.5-3.5V21H3V3z"/></svg>
+        </div>
+        <div class="social-info">
+          <strong>Kick</strong>
+          <span>kick.com/mmakhai</span>
+        </div>
+      </a>
+
+      <a class="social-card" href="https://www.twitch.tv/mmakhai" target="_blank" rel="noopener">
+        <div class="social-icon">
+          <svg viewBox="0 0 24 24" fill="#a78bfa"><path d="M4.3 2L2 5.3v14.4h4.8V22l2.9-2.3h3.6L20 13.5V2H4.3zm14 10.3l-3.3 3.3h-3.3l-2.3 2.3v-2.3H6.2V3.7h12.1v8.6zM15 7.2h-1.7v4.8H15V7.2zm-4.4 0H8.9v4.8h1.7V7.2z"/></svg>
+        </div>
+        <div class="social-info">
+          <strong>Twitch</strong>
+          <span>twitch.tv/mmakhai</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="cta">
+      <a href="profiles.html" class="cta-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L14 9 L12 11 L10 9 Z M12 13 L14 20 L12 22 L10 20 Z"/><circle cx="12" cy="12" r="2"/></svg>
+        Profiles / Addons
+      </a>
+      <p class="cta-note">EllesmereUI · Platynator · MPlusTimer</p>
+    </div>
+  </main>
+
+  <footer>
+    <strong>MMakhai</strong> · All rights reserved
+  </footer>
+</body>
+</html>
